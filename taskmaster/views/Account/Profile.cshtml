@@ -1,0 +1,51 @@
+﻿@using CloudSync.Models
+@model User
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-user"></i> My Profile
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label text-muted">First Name</label>
+                                <p class="form-control-plaintext">@Model.FirstName</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label text-muted">Last Name</label>
+                                <p class="form-control-plaintext">@Model.LastName</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Email Address</label>
+                        <p class="form-control-plaintext">@Model.Email</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Member Since</label>
+                        <p class="form-control-plaintext">@Model.CreatedAt.ToString("MMMM dd, yyyy")</p>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Index" asp-controller="Home" class="btn btn-primary">
+                        <i class="fas fa-arrow-left"></i> Back to Tasks
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
