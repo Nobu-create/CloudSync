@@ -19,3 +19,4 @@
     <ProjectReference Include="..\taskmaster\taskmaster.csproj" />
   </ItemGroup>
 </Project>
+
