@@ -8,6 +8,7 @@ using CloudSync.Models;
 
 #nullable disable
 
+
 namespace taskmaster.Migrations
 {
     [DbContext(typeof(ToDoContext))]
