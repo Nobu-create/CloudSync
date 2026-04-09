@@ -1,0 +1,215 @@
+@using CloudSync.Models
+@model TaskViewModel
+@{
+    ViewData["Title"] = "My Tasks";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">My Tasks</h2>
+        <p class="mb-0" style="color:var(--text-secondary);font-size:13px">Manage and track your tasks</p>
+    </div>
+    <a asp-action="Add" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Add Task
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">@TempData["Success"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">@TempData["Error"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+@if (TempData["Info"] != null)
+{
+    <div class="alert alert-info alert-dismissible fade show">@TempData["Info"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+
+<div class="row g-4">
+    <!-- Filters Sidebar -->
+    <div class="col-md-3">
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="bi bi-funnel"></i> Filters
+            </div>
+            <div class="card-body">
+                <form asp-action="Filter" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select name="categoryFilter" class="form-select" asp-items="Model.Categories">
+                            <option value="all">All Categories</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Due Date</label>
+                        <select name="dueFilter" class="form-select" asp-items="Model.DueFilters">
+                            <option value="all">All Dates</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select name="statusFilter" class="form-select" asp-items="Model.Statuses">
+                            <option value="all">All Statuses</option>
+                        </select>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="bi bi-search"></i> Apply Filters
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-x"></i> Clear Filters
+                        </a>
+                    </div>
+                </form>
+
+                @if (Model.Tasks.Any(t => t.StatusId == "closed"))
+                {
+                    <hr style="border-color:var(--border-color)">
+                    <form asp-action="DeleteCompleted" method="post"
+                          onsubmit="return confirm('Delete all completed tasks?')">
+                        <input type="hidden" name="returnUrl" value="@Model.CurrentFilters.FilterString" />
+                        <button type="submit" class="btn btn-danger btn-sm w-100">
+                            <i class="bi bi-trash"></i> Delete Completed
+                        </button>
+                    </form>
+                }
+            </div>
+        </div>
+
+        <!-- Stats card -->
+        <div class="card">
+            <div class="card-header"><i class="bi bi-bar-chart"></i> Stats</div>
+            <div class="card-body">
+                <div class="row text-center g-2">
+                    <div class="col-6">
+                        <div style="font-size:22px;font-weight:600;color:var(--accent-blue)">@Model.Tasks.Count(t => t.StatusId == "open")</div>
+                        <div style="font-size:11px;color:var(--text-muted)">Open</div>
+                    </div>
+                    <div class="col-6">
+                        <div style="font-size:22px;font-weight:600;color:var(--accent-success)">@Model.Tasks.Count(t => t.StatusId == "closed")</div>
+                        <div style="font-size:11px;color:var(--text-muted)">Done</div>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <div style="font-size:22px;font-weight:600;color:var(--accent-danger)">@Model.Tasks.Count(t => t.Overdue)</div>
+                        <div style="font-size:11px;color:var(--text-muted)">Overdue</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Cards -->
+    <div class="col-md-9">
+        @if (Model.Tasks.Any())
+        {
+            <div class="row g-3">
+                @foreach (var task in Model.Tasks)
+                {
+                    <div class="col-lg-6 col-xl-4">
+                        <div class="card h-100 @(task.Overdue ? "border-danger" : "")">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title mb-0 @(task.StatusId == "closed" ? "text-decoration-line-through" : "")"
+                                        style="color:@(task.StatusId == "closed" ? "var(--text-muted)" : "var(--text-primary)")">
+                                        @task.Description
+                                    </h6>
+                                    <div class="dropdown ms-2">
+                                        <button class="btn btn-sm btn-outline-secondary py-0 px-1" type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@task.Id"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                                            <li>
+                                                <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this task?')">
+                                                    <input type="hidden" name="id" value="@task.Id" />
+                                                    <input type="hidden" name="returnUrl" value="@Model.CurrentFilters.FilterString" />
+                                                    <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Delete</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2" style="font-size:12px;color:var(--text-muted)">
+                                    <i class="bi bi-folder2"></i> @task.Category?.Name
+                                </div>
+
+                                <div class="mb-2" style="font-size:12px;color:@(task.Overdue ? "var(--accent-danger)" : "var(--text-muted)")">
+                                    <i class="bi bi-calendar3"></i> @task.DueDate?.ToString("MMM dd, yyyy")
+                                    @if (task.Overdue)
+                                    {
+                                        <span class="badge bg-danger ms-1">Overdue</span>
+                                    }
+                                </div>
+
+                                <!-- Priority badge -->
+                                @if (task.Priority != null)
+                                {
+                                    <span class="badge bg-@task.Priority.BadgeColor me-1">@task.Priority.Name</span>
+                                }
+
+                                <span class="badge @(task.StatusId == "open" ? "bg-primary" : "bg-success")">
+                                    @task.Status?.Name
+                                </span>
+
+                                @if (task.Project != null)
+                                {
+                                    <div class="mt-2" style="font-size:11px;color:var(--text-muted)">
+                                        <i class="bi bi-kanban"></i> @task.Project.Name
+                                    </div>
+                                }
+
+                                @if (task.AssignedTo != null)
+                                {
+                                    <div style="font-size:11px;color:var(--text-muted)">
+                                        <i class="bi bi-person"></i> @task.AssignedTo.FullName
+                                    </div>
+                                }
+                            </div>
+
+                            @if (task.StatusId == "open")
+                            {
+                                <div class="card-footer" style="background:transparent;border-top:1px solid var(--border-color)">
+                                    <form asp-action="MarkComplete" method="post">
+                                        <input type="hidden" name="id" value="@task.Id" />
+                                        <input type="hidden" name="returnUrl" value="@Model.CurrentFilters.FilterString" />
+                                        <button type="submit" class="btn btn-success btn-sm w-100">
+                                            <i class="bi bi-check-circle"></i> Mark Complete
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-check2-square" style="font-size:48px;color:var(--text-muted)"></i>
+                <h5 class="mt-3" style="color:var(--text-muted)">No tasks found</h5>
+                <p style="color:var(--text-muted);font-size:13px">
+                    @if (Model.CurrentFilters.FilterString != "all-all-all")
+                    {
+                        <span>Try adjusting your filters or </span>
+                    }
+                    <a asp-action="Add" style="color:var(--accent-blue)">add your first task</a>
+                </p>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const categorySelect = document.querySelector('select[name="categoryFilter"]');
+        const dueSelect = document.querySelector('select[name="dueFilter"]');
+        const statusSelect = document.querySelector('select[name="statusFilter"]');
+        if (categorySelect) categorySelect.value = '@Model.CurrentFilters.CategoryId';
+        if (dueSelect) dueSelect.value = '@Model.CurrentFilters.Due';
+        if (statusSelect) statusSelect.value = '@Model.CurrentFilters.StatusId';
+    });
+</script>
