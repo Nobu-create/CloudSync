@@ -7,6 +7,7 @@ namespace CloudSync.Tests
     public class ToDoModelTests
     {
         // ===== ToDo Model Tests =====
+        
 
         [Fact]
         public void ToDo_IsOverdue_WhenStatusOpenAndDueDatePast()
