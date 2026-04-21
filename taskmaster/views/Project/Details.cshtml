@@ -1,0 +1,180 @@
+@model CloudSync.Models.Project
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">@Model.Name</h2>
+        <span class="badge bg-@(Model.StatusId == "active" ? "success" : Model.StatusId == "completed" ? "primary" : "secondary") mt-1">
+            @Model.StatusId
+        </span>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-pencil"></i> Edit
+        </a>
+        <a asp-controller="Home" asp-action="Add" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus"></i> Add Task
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">@TempData["Success"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">@TempData["Error"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+
+<div class="row g-4">
+    <!-- Left column -->
+    <div class="col-lg-8">
+
+        <!-- Stats row -->
+        <div class="row g-3 mb-4">
+            <div class="col-4">
+                <div class="card border-0 bg-light text-center p-3">
+                    <h3 class="fw-bold text-primary mb-0">@Model.TotalTasks</h3>
+                    <small class="text-muted">Total Tasks</small>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card border-0 bg-light text-center p-3">
+                    <h3 class="fw-bold text-success mb-0">@Model.CompletedTasks</h3>
+                    <small class="text-muted">Completed</small>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card border-0 bg-light text-center p-3">
+                    <h3 class="fw-bold text-danger mb-0">@Model.OverdueTasks</h3>
+                    <small class="text-muted">Overdue</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="fw-semibold">Overall Progress</span>
+                    <span class="fw-bold text-primary">@Model.ProgressPercent%</span>
+                </div>
+                <div class="progress" style="height: 12px;">
+                    <div class="progress-bar bg-primary" style="width: @Model.ProgressPercent%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks list -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-bold">Tasks</div>
+            <div class="card-body p-0">
+                @if (!Model.Tasks.Any())
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-check2-square display-5"></i>
+                        <p class="mt-2">No tasks yet. Add your first task!</p>
+                    </div>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var task in Model.Tasks.OrderBy(t => t.DueDate))
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center @(task.Overdue ? "table-danger" : "")">
+                                <div>
+                                    <span class="@(task.StatusId == "closed" ? "text-decoration-line-through text-muted" : "")">
+                                        @task.Description
+                                    </span>
+                                    <div class="mt-1">
+                                        <span class="badge bg-@(task.Priority?.BadgeColor ?? "secondary") me-1">@(task.Priority?.Name ?? "Medium")</span>
+                                        @if (task.DueDate.HasValue)
+                                        {
+                                            <small class="text-muted"><i class="bi bi-calendar"></i> @task.DueDate.Value.ToString("MMM dd")</small>
+                                        }
+                                        @if (task.AssignedTo != null)
+                                        {
+                                            <small class="text-muted ms-2"><i class="bi bi-person"></i> @task.AssignedTo.FullName</small>
+                                        }
+                                    </div>
+                                </div>
+                                <span class="badge bg-@(task.StatusId == "closed" ? "success" : task.Overdue ? "danger" : "warning")">
+                                    @(task.StatusId == "closed" ? "Done" : task.Overdue ? "Overdue" : "Open")
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Right column -->
+    <div class="col-lg-4">
+
+        <!-- Project info -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white fw-bold">Project Info</div>
+            <div class="card-body">
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <p class="text-muted small">@Model.Description</p>
+                }
+                <p class="small mb-1"><strong>Created:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy")</p>
+                @if (Model.DueDate.HasValue)
+                {
+                    <p class="small mb-1"><strong>Due:</strong> @Model.DueDate.Value.ToString("MMM dd, yyyy")</p>
+                }
+                <p class="small mb-0"><strong>Owner:</strong> @(Model.Owner?.FullName ?? "You")</p>
+            </div>
+        </div>
+
+        <!-- Team members -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-bold">Team Members</div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-3">
+                    @foreach (var member in Model.Members)
+                    {
+                        <li class="d-flex align-items-center justify-content-between mb-2">
+                            <div>
+                                <i class="bi bi-person-circle text-primary me-2"></i>
+                                <span class="small">@(member.User?.FullName ?? member.UserId)</span>
+                                @if (member.Role == "owner")
+                                {
+                                    <span class="badge bg-primary ms-1 small">Owner</span>
+                                }
+                            </div>
+                            @if (member.Role != "owner")
+                            {
+                                <form asp-action="RemoveMember" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="projectId" value="@Model.Id" />
+                                    <input type="hidden" name="memberId" value="@member.UserId" />
+                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </form>
+                            }
+                        </li>
+                    }
+                </ul>
+
+                <!-- Add member form -->
+                <form asp-action="AddMember" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="projectId" value="@Model.Id" />
+                    <div class="input-group input-group-sm">
+                        <input type="email" name="email" class="form-control" placeholder="Email address" required />
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-plus"></i> Add
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
