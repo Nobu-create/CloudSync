@@ -7,7 +7,6 @@ namespace CloudSync.Tests
     public class ToDoModelTests
     {
         // ===== ToDo Model Tests =====
-        
 
         [Fact]
         public void ToDo_IsOverdue_WhenStatusOpenAndDueDatePast()
@@ -184,6 +183,7 @@ namespace CloudSync.Tests
 
             var count = context.Notifications.Count();
             Assert.Equal(1, count);
+
         }
 
         // ===== Filters Tests =====
@@ -212,5 +212,3 @@ namespace CloudSync.Tests
         }
     }
 }
-
-
