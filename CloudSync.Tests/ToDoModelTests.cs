@@ -8,13 +8,14 @@ namespace CloudSync.Tests
     {
         // ===== ToDo Model Tests =====
 
+
         [Fact]
         public void ToDo_IsOverdue_WhenStatusOpenAndDueDatePast()
         {
             var task = new ToDo
             {
                 StatusId = "open",
-                DueDate = DateTime.Today.AddDays(-1)
+                DueDate = DateTime.Today.AddDays(-1) 
             };
             Assert.True(task.Overdue);
         }
@@ -183,7 +184,6 @@ namespace CloudSync.Tests
 
             var count = context.Notifications.Count();
             Assert.Equal(1, count);
-
         }
 
         // ===== Filters Tests =====
