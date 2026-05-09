@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-
-
 namespace CloudSync.Models
 {
     public class ToDoContext : IdentityDbContext<User>
@@ -61,7 +59,7 @@ namespace CloudSync.Models
                 .HasOne(n => n.User).WithMany(u => u.Notifications)
                 .HasForeignKey(n => n.UserId).OnDelete(DeleteBehavior.Cascade);
 
-            // Seed data
+            // Seed data  
             modelBuilder.Entity<Category>().HasData(
                 new Category { CategoryId = "work", Name = "Work" },
                 new Category { CategoryId = "home", Name = "Home" },
