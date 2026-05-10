@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+
 namespace CloudSync.Models
 {
     public class LoginViewModel
