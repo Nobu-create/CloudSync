@@ -53,7 +53,7 @@ namespace taskmaster.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Cascade);   
                 });
 
             migrationBuilder.CreateTable(
