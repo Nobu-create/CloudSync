@@ -26,5 +26,4 @@ jobs:
 
     - name: Test
       run: dotnet test taskmaster/taskmaster.csproj --no-build --verbosity normal
-      continue-on-error: true
-
+      continue-on-error: true   
