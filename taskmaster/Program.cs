@@ -79,7 +79,7 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    context.Database.EnsureCreated();
+    context.Database.Migrate();
 
     // Seed default admin user (optional)
     SeedDefaultUser(userManager).Wait();
