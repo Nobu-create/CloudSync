@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Profile";
 }
-
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -18,25 +17,23 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label text-muted">First Name</label>
-                                <p class="form-control-plaintext">@Model.FirstName</p>
+                                <p class="form-control-plaintext" style="color:white">@Model.FirstName</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label text-muted">Last Name</label>
-                                <p class="form-control-plaintext">@Model.LastName</p>
+                                <p class="form-control-plaintext" style="color:white">@Model.LastName</p>
                             </div>
                         </div>
                     </div>
-
                     <div class="mb-3">
                         <label class="form-label text-muted">Email Address</label>
-                        <p class="form-control-plaintext">@Model.Email</p>
+                        <p class="form-control-plaintext" style="color:white">@Model.Email</p>
                     </div>
-
                     <div class="mb-3">
                         <label class="form-label text-muted">Member Since</label>
-                        <p class="form-control-plaintext">@Model.CreatedAt.ToString("MMMM dd, yyyy")</p>
+                        <p class="form-control-plaintext" style="color:white">@Model.CreatedAt.ToString("MMMM dd, yyyy")</p>
                     </div>
                 </div>
                 <div class="card-footer">
@@ -48,4 +45,3 @@
         </div>
     </div>
 </div>
-
