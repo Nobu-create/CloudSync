@@ -3,11 +3,12 @@
     ViewData["Title"] = "My Projects";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold text-primary"><i class="bi bi-kanban"></i> My Projects</h2>
-    <a asp-action="Create" class="btn btn-primary">
-        <i class="bi bi-plus-circle"></i> New Project
-    </a>
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-kanban" style="color:var(--accent-blue)"></i> My Projects</h2>
+        <div class="sub">@Model.Count() project(s) &middot; @Model.Count(p => p.StatusId == "active") active</div>
+    </div>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> New Project</a>
 </div>
 
 @if (TempData["Success"] != null)
@@ -21,75 +22,93 @@
 
 @if (!Model.Any())
 {
-    <div class="text-center py-5">
-        <i class="bi bi-kanban display-1 text-muted"></i>
-        <h4 class="mt-3 text-muted">No projects yet</h4>
-        <p class="text-muted">Create your first project to get started.</p>
-        <a asp-action="Create" class="btn btn-primary btn-lg mt-2">Create Project</a>
+    <div class="empty-state">
+        <div class="empty-state-icon"><i class="bi bi-kanban"></i></div>
+        <h5>No projects yet</h5>
+        <p>Create your first project to start collaborating.</p>
+        <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Create Project</a>
     </div>
 }
 else
 {
-    <div class="row g-4">
+    <div class="row g-4 stagger">
         @foreach (var project in Model)
         {
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="card-title fw-bold mb-0">@project.Name</h5>
-                            <span class="badge bg-@(project.StatusId == "active" ? "success" : project.StatusId == "completed" ? "primary" : "secondary")">
-                                @project.StatusId
-                            </span>
-                        </div>
+            <div class="col-md-6 col-lg-4 fade-in-up">
+                <div class="project-card">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <h5 class="mb-0 fw-bold" style="font-size:15px;color:var(--text-primary)">@project.Name</h5>
+                        <span class="project-status @project.StatusId">@project.StatusId</span>
+                    </div>
 
-                        @if (!string.IsNullOrEmpty(project.Description))
-                        {
-                            <p class="card-text text-muted small">@project.Description</p>
-                        }
+                    @if (!string.IsNullOrEmpty(project.Description))
+                    {
+                        <p style="font-size:12px;color:var(--text-muted);margin:6px 0 10px">@project.Description</p>
+                    }
 
+                    <div class="d-flex gap-3 flex-wrap mb-3" style="font-size:11px;color:var(--text-muted)">
+                        <span><i class="bi bi-list-task"></i> @project.TotalTasks tasks</span>
+                        <span><i class="bi bi-check-circle"></i> @project.CompletedTasks done</span>
                         @if (project.DueDate.HasValue)
                         {
-                            <p class="small text-muted mb-2">
-                                <i class="bi bi-calendar"></i> Due: @project.DueDate.Value.ToString("MMM dd, yyyy")
-                            </p>
+                            <span><i class="bi bi-calendar3"></i> @project.DueDate.Value.ToString("MMM dd, yyyy")</span>
                         }
+                        @if (project.OverdueTasks > 0)
+                        {
+                            <span style="color:var(--accent-danger)">
+                                <i class="bi bi-exclamation-triangle"></i> @project.OverdueTasks overdue
+                            </span>
+                        }
+                    </div>
 
-                        <!-- Progress bar -->
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between small text-muted mb-1">
-                                <span>Progress</span>
-                                <span>@project.CompletedTasks / @project.TotalTasks tasks</span>
-                            </div>
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-primary" role="progressbar"
-                                     style="width: @project.ProgressPercent%"
-                                     aria-valuenow="@project.ProgressPercent" aria-valuemin="0" aria-valuemax="100">
-                                </div>
-                            </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1" style="font-size:11px;color:var(--text-muted)">
+                            <span>Progress</span>
+                            <span style="color:var(--accent-blue);font-weight:700">@project.ProgressPercent%</span>
                         </div>
-
-                        <!-- Members -->
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="bi bi-people text-muted me-1"></i>
-                            <span class="small text-muted">@project.Members.Count member(s)</span>
-                            @if (project.OverdueTasks > 0)
-                            {
-                                <span class="badge bg-danger ms-auto">@project.OverdueTasks overdue</span>
-                            }
+                        <div class="progress" style="height:6px">
+                            <div class="progress-bar @(project.ProgressPercent == 100 ? "bg-success" : "")"
+                                 style="width:@project.ProgressPercent%"></div>
                         </div>
                     </div>
-                    <div class="card-footer bg-transparent border-0 d-flex gap-2">
-                        <a asp-action="Details" asp-route-id="@project.Id" class="btn btn-sm btn-outline-primary flex-fill">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Members</div>
+                            <div class="avatar-stack">
+                                @{
+                                    var colors = new[] { "", "green", "orange", "purple" };
+                                    int ci = 0;
+                                }
+                                @foreach (var member in project.Members.Take(4))
+                                {
+                                    <div class="avatar @colors[ci % colors.Length]" title="@member.User?.FullName">
+                                        @(member.User?.FullName?.Substring(0, 1).ToUpper() ?? "?")
+                                    </div>
+                                    ci++;
+                                }
+                                @if (project.Members.Count > 4)
+                                {
+                                    <div class="avatar" style="background:var(--bg-hover);color:var(--text-muted);font-size:10px">
+                                        +@(project.Members.Count - 4)
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <span style="font-size:11px;color:var(--text-muted)">@project.Members.Count member(s)</span>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-auto pt-2" style="border-top:1px solid var(--border-color)">
+                        <a asp-action="Details" asp-route-id="@project.Id" class="btn btn-outline-primary btn-sm flex-fill">
                             <i class="bi bi-eye"></i> View
                         </a>
-                        <a asp-action="Edit" asp-route-id="@project.Id" class="btn btn-sm btn-outline-secondary">
+                        <a asp-action="Edit" asp-route-id="@project.Id" class="btn btn-ghost btn-sm">
                             <i class="bi bi-pencil"></i>
                         </a>
                         <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this project?')">
                             <input type="hidden" name="id" value="@project.Id" />
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--accent-danger)">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </form>
