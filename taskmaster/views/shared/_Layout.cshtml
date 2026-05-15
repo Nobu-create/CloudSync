@@ -4,9 +4,143 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CloudSync</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        /* ===== LIGHT THEME OVERRIDES ===== */
+        body.light-theme {
+            background-color: #f4f6fb !important;
+            color: #1a1d27 !important;
+        }
+
+            body.light-theme .navbar {
+                background: #ffffff !important;
+                border-bottom: 1px solid #dee2e6 !important;
+            }
+
+            body.light-theme .navbar-brand,
+            body.light-theme .nav-link {
+                color: #1a1d27 !important;
+            }
+
+                body.light-theme .nav-link:hover {
+                    background: #f0f2f8 !important;
+                    color: #1a1d27 !important;
+                }
+
+            body.light-theme .active-nav {
+                background: rgba(79,142,247,0.15) !important;
+                color: #1a1d27 !important;
+            }
+
+            body.light-theme .card {
+                background: #ffffff !important;
+                border: 1px solid #dee2e6 !important;
+                color: #1a1d27 !important;
+            }
+
+            body.light-theme .card-header {
+                background: #f8f9fa !important;
+                border-bottom: 1px solid #dee2e6 !important;
+                color: #1a1d27 !important;
+            }
+
+            body.light-theme .card-body {
+                color: #1a1d27 !important;
+            }
+
+            body.light-theme .form-control,
+            body.light-theme .form-select,
+            body.light-theme textarea {
+                background: #ffffff !important;
+                border: 1px solid #ced4da !important;
+                color: #1a1d27 !important;
+            }
+
+                body.light-theme .form-control::placeholder,
+                body.light-theme textarea::placeholder {
+                    color: #6c757d !important;
+                }
+
+            body.light-theme .form-label {
+                color: #495057 !important;
+            }
+
+            body.light-theme .dropdown-menu {
+                background: #ffffff !important;
+                border: 1px solid #dee2e6 !important;
+            }
+
+            body.light-theme .dropdown-item {
+                color: #1a1d27 !important;
+            }
+
+                body.light-theme .dropdown-item:hover {
+                    background: #f0f2f8 !important;
+                }
+
+            body.light-theme .list-group-item {
+                background: #ffffff !important;
+                border-color: #dee2e6 !important;
+                color: #1a1d27 !important;
+            }
+
+                body.light-theme .list-group-item:hover {
+                    background: #f8f9fa !important;
+                }
+
+            body.light-theme .table {
+                color: #1a1d27 !important;
+                border-color: #dee2e6 !important;
+            }
+
+            body.light-theme .text-muted {
+                color: #6c757d !important;
+            }
+
+            body.light-theme h1, body.light-theme h2,
+            body.light-theme h3, body.light-theme h4,
+            body.light-theme h5, body.light-theme h6 {
+                color: #1a1d27 !important;
+            }
+
+            body.light-theme footer {
+                background: #ffffff !important;
+                border-top: 1px solid #dee2e6 !important;
+                color: #6c757d !important;
+            }
+
+            body.light-theme .modal-content {
+                background: #ffffff !important;
+                border: 1px solid #dee2e6 !important;
+                color: #1a1d27 !important;
+            }
+
+            body.light-theme .progress {
+                background: #e9ecef !important;
+            }
+
+            body.light-theme .form-control-plaintext {
+                color: #1a1d27 !important;
+            }
+        /* Toggle button */
+        #theme-toggle {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: inherit;
+            padding: 4px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        body.light-theme #theme-toggle {
+            border: 1px solid #ced4da;
+            color: #1a1d27;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -47,9 +181,14 @@
                             </li>
                         }
                     </ul>
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav align-items-center">
                         @if (User.Identity?.IsAuthenticated == true)
                         {
+                            <li class="nav-item me-2">
+                                <button id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                                    <i class="bi bi-sun-fill" id="theme-icon"></i>
+                                </button>
+                            </li>
                             <li class="nav-item me-1">
                                 <a class="nav-link position-relative" asp-controller="Notification" asp-action="Index">
                                     <i class="bi bi-bell"></i>
@@ -79,6 +218,11 @@
                         }
                         else
                         {
+                            <li class="nav-item me-2">
+                                <button id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                                    <i class="bi bi-sun-fill" id="theme-icon"></i>
+                                </button>
+                            </li>
                             <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Login"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
                             <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Register"><i class="bi bi-person-plus"></i> Register</a></li>
                         }
@@ -96,13 +240,36 @@
         &copy; 2026 CloudSync Task &amp; Productivity Manager
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        // Theme toggle
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            if (body.classList.contains('light-theme')) {
+                body.classList.remove('light-theme');
+                icon.className = 'bi bi-sun-fill';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.add('light-theme');
+                icon.className = 'bi bi-moon-fill';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Apply saved theme on page load
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-theme');
+            document.getElementById('theme-icon').className = 'bi bi-moon-fill';
+        }
+    </script>
+
     @if (User.Identity?.IsAuthenticated == true)
     {
         <script>
-            // Poll for unread notifications every 30 seconds
             function checkNotifications() {
                 fetch('/Notification/UnreadCount')
                     .then(r => r.json())
