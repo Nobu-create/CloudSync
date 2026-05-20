@@ -2,10 +2,6 @@
 
 A collaborative task and project management web application built for teams.
 
-## 🔗 Live Application
-
-> **Coming soon** — Azure deployment in progress.  
-> URL: `https://cloudsync.azurewebsites.net` *(update this when live)*
 
 ---
 
@@ -35,7 +31,7 @@ Built as a Final Year Project at UITM Rzeszów, 2026.
 - **Frontend:** Bootstrap 5, Chart.js, custom dark theme CSS
 - **Testing:** xUnit (14 unit tests)
 - **CI/CD:** GitHub Actions
-- **Deployment:** Microsoft Azure
+- **Deployment: On-premise/Local Host
 
 ---
 
